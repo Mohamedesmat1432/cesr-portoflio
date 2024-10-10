@@ -10,10 +10,19 @@ use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
-    public function index()
+    public function allPermissions()
+    {
+        return response()->json([
+            'permissions' => Permission::all()
+        ], 200);
+    }
+
+    public function index(Request $request)
     {
         try {
-            $permissions = Permission::paginate(10);
+            $perPage = $request->input('per_page', 2); // Default to 10 items per page
+
+            $permissions = Permission::latest()->paginate($perPage);
 
             return response()->json([
                 'permissions' => $permissions,
@@ -35,6 +44,8 @@ class PermissionController extends Controller
         try{
             $validated = $request->validated();
 
+            $validated['guard_name'] = 'web';
+
             $permission = Permission::create($validated);
 
             return response()->json([
@@ -52,8 +63,10 @@ class PermissionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Permission $permission)
+    public function show($id)
     {
+        $permission = Permission::findOrFail($id);
+        
         return response()->json([
             'permission' => $permission,
         ], 200);
@@ -62,12 +75,12 @@ class PermissionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePermissionRequest $request, Permission $permission)
+    public function update(UpdatePermissionRequest $request, $id)
     {
         try{
             $validated = $request->validated();
 
-            $permission = $permission->update($validated);
+            $permission = Permission::findOrFail($id)->update($validated);
 
             return response()->json([
                 'permission' => $permission,
@@ -84,16 +97,18 @@ class PermissionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(permission $permission)
+    public function destroy($id)
     {
         try{
-            $permission = $permission->delete();
+            $permission = Permission::findOrFail($id)->delete();
 
-            return response()->json([
-                'permission' => $permission,
-                'message'=> __('messages.permission_deleted')
-            ], 200);
-    
+            return response()->json(
+                [
+                    'permission' => $permission,
+                    'message' => __('messages.permission_deleted'),
+                ],
+                200,
+            );
         }catch(\Exception $e){
             return response()->json([
                 'errors' => $e->getMessage(),

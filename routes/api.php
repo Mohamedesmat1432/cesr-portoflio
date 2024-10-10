@@ -10,15 +10,16 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/set-locale', [LocaleController::class, 'setLocale']);
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('permissions', PermissionController::class);
+    Route::get('/all-permissions',[PermissionController::class, 'allPermissions']);
 });
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('/register', 'register');
     Route::post('/login', 'login');
-    Route::middleware('auth:api')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', 'logout');
         Route::get('/user', 'getUser');
     });

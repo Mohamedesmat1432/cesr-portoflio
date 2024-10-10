@@ -18,7 +18,7 @@ class RoleController extends Controller
         try {
             $perPage = $request->input('per_page', 2); // Default to 10 items per page
 
-            $roles = Role::latest()->paginate($perPage);
+            $roles = Role::with('permissions')->latest()->paginate($perPage);
 
             return response()->json(
                 [
@@ -48,6 +48,10 @@ class RoleController extends Controller
 
             $role = Role::create($validated);
 
+            if($request->has('permissions')) {
+                $role->syncPermissions($validated['permissions']);
+            }
+
             return response()->json(
                 [
                     'role' => $role,
@@ -68,12 +72,15 @@ class RoleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Role $role)
+    public function show($id)
     {
         try {
+            $role = Role::findOrFail($id);
+
             return response()->json(
                 [
                     'role' => $role,
+                    'permissions' => $role->permissions()->pluck('name')
                 ],
                 200,
             );
@@ -90,12 +97,18 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRoleRequest $request, Role $role)
+    public function update(UpdateRoleRequest $request, $id)
     {
         try {
             $validated = $request->validated();
+            
+            $role = Role::findOrFail($id);
 
-            $role = $role->update($validated);
+            $role->update($validated);
+
+            if($request->has('permissions')) {
+                $role->syncPermissions($validated['permissions']);
+            }
 
             return response()->json(
                 [
@@ -117,26 +130,17 @@ class RoleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Role $role)
+    public function destroy($id)
     {
         try {
-            // $role = Role::find($id);
-            if ($role) {
-                $role->delete();
+            $role = Role::findOrFail($id)->delete();
 
-                return response()->json(
-                    [
-                        'role' => $role,
-                        'message' => __('messages.role_deleted'),
-                    ],
-                    200,
-                );
-            }
             return response()->json(
                 [
-                    'message' => __('messages.validate_errors'),
+                    'role' => $role,
+                    'message' => __('messages.role_deleted'),
                 ],
-                404,
+                200,
             );
         } catch (\Exception $e) {
             return response()->json(
