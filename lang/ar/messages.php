@@ -13,4 +13,8 @@ return [
     'permission_updated' => 'تم تحديث اﻷذن بنجاح',
     'permission_deleted' => 'تم حذف اﻷذن بنجاح',
     'permission_delete_all' => 'تم حذف اﻷوذنات بنجاح',
+    'user_created' => 'تم انشاء المستخدم بنجاح',
+    'user_updated' => 'تم تحديث المستخدم بنجاح',
+    'user_deleted' => 'تم حذف المستخدم بنجاح',
+    'user_delete_all' => 'تم حذف المستخدمين بنجاح',
 ];

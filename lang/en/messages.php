@@ -13,4 +13,8 @@ return [
     'permission_updated' => 'Permission has been updated successfully',
     'permission_deleted' => 'Permission has been deleted successfully',
     'permission_delete_all' => 'Permissions has been deleted successfully',
+    'user_created' => 'User has been created successfully',
+    'user_updated' => 'User has been updated successfully',
+    'user_deleted' => 'User has been deleted successfully',
+    'user_delete_all' => 'Users has been deleted successfully',
 ];

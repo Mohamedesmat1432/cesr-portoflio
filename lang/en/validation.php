@@ -189,6 +189,13 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'email' =>  'Email Address',
+        'password' => 'Password',
+        'permission' => 'Permission',
+        'role' => 'Role',
+        'roles' => 'Roles',
+        'permissions' => 'Permissions',
+    ],
 
 ];
